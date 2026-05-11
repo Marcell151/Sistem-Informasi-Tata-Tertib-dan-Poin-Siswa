@@ -129,11 +129,6 @@ $active_tab = ($saved_guru_id) ? 'guru' : 'admin';
             <svg class="w-4 h-4 mr-2 text-slate-400 group-hover:text-[#000080]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
             Masuk sebagai Wali Murid
         </a>
-        <br>
-        <a href="index.php" class="inline-flex items-center text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors">
-            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"></path></svg>
-            Kembali ke Portal Utama
-        </a>
     </div>
 
     <script>

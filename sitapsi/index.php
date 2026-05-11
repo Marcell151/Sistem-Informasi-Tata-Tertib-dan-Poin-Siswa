@@ -13,7 +13,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
     }
 } else {
     // Redirect ke halaman login portal utama
-    header('Location: ../index.php');
+    header('Location: ../login.php');
 }
 
 exit;

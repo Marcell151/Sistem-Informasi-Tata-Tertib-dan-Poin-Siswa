@@ -30,6 +30,6 @@ foreach ($cookies_to_delete as $cookie_name) {
 session_destroy();
 
 // 5. Kembalikan ke Gerbang Utama (Halaman Login Portal)
-header('Location: index.php');
+header('Location: login.php');
 exit;
 ?>

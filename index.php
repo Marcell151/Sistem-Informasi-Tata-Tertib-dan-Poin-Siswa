@@ -3,11 +3,11 @@
  * PORTAL TERPADU - Halaman Utama (Pre-Login)
  * SMPK Santa Maria 2 Malang
  */
-session_start();
+header("Location: login.php");
+exit;
 
-// Jika sudah login, bisa saja tetap di sini atau redirect ke launchpad
-// Tapi biasanya portal utama tetap bisa diakses
-$is_logged_in = isset($_SESSION['user_id']);
+session_start();
+// ... rest of the code is preserved but will not be executed due to the redirect above
 ?>
 <!DOCTYPE html>
 <html lang="id">
