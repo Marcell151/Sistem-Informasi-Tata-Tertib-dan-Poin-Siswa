@@ -36,33 +36,15 @@ CREATE TABLE tb_kelas (
     tingkat INT NOT NULL -- 7, 8, 9
 );
 
--- Tabel Mata Pelajaran (Integrasi Master Mapel)
-CREATE TABLE tb_mapel (
-    id_mapel INT AUTO_INCREMENT PRIMARY KEY,
-    kode_mapel VARCHAR(20) NOT NULL,
-    nama_mapel VARCHAR(100) NOT NULL,
-    grade VARCHAR(20) NOT NULL, -- VII, VIII, IX
-    hours INT DEFAULT 0,
-    cat VARCHAR(50) DEFAULT 'Umum',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
 -- Tabel Guru (Login SSO dengan PIN) + Fitur Wali Kelas & Kode Jadwal
 CREATE TABLE tb_guru (
     id_guru INT AUTO_INCREMENT PRIMARY KEY,
     nama_guru VARCHAR(100) NOT NULL,
     nip VARCHAR(30),
-    kode_guru VARCHAR(10), 
-    is_walikelas ENUM('Ya', 'Tidak') DEFAULT 'Tidak',
-    id_kelas INT NULL, -- Jika is_walikelas='Ya', isi ID Kelas. Jika NULL, guru biasa
-    pin_validasi VARCHAR(6) NOT NULL, 
+    kode_guru VARCHAR(10), -- [MODIFIKASI BARU: Kode khusus untuk Integrasi Sistem Jadwal/Presensi]
+    id_kelas INT NULL, -- Jika berisi ID Kelas, maka dia Wali Kelas. Jika NULL, guru biasa
+    pin_validasi VARCHAR(6) NOT NULL, -- PIN 6 Digit
     status ENUM('Aktif', 'Non-Aktif') DEFAULT 'Aktif',
-    email VARCHAR(100),
-    phone VARCHAR(20),
-    mapel VARCHAR(150), -- Diisi nama mapel (bisa multiple)
-    homebase VARCHAR(50),
-    isBK TINYINT(1) DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
     FOREIGN KEY (id_kelas) REFERENCES tb_kelas(id_kelas) ON DELETE SET NULL
 );
@@ -187,7 +169,6 @@ CREATE TABLE tb_pelanggaran_header (
     tipe_form ENUM('Piket', 'Kelas') NOT NULL,
     bukti_foto VARCHAR(255),
     lampiran_link TEXT NULL, 
-    status_pelanggaran ENUM('Valid', 'Dibatalkan') DEFAULT 'Valid',
     
     -- Fitur Laporan/Revisi Wali Kelas
     status_revisi ENUM('None', 'Pending', 'Disetujui', 'Ditolak') DEFAULT 'None',
@@ -386,103 +367,35 @@ INSERT INTO tb_admin (username, password, nama_lengkap, role) VALUES
 ('admintatib', 'admin123', 'Tim Kedisiplinan', 'Admin'),
 ('kepsek', 'kepsek123', 'Kepala Sekolah', 'KepalaSekolah');
 
--- Insert Data Tahun 
-INSERT INTO tb_tahun_ajaran (nama_tahun, status, semester_aktif) VALUES 
-('2025/2026', 'Aktif', 'Ganjil');
-
 -- INSERT KELAS
 INSERT INTO tb_kelas (nama_kelas, tingkat) VALUES ('VII A', 7), ('VII B', 7), ('VII C', 7), ('VII D', 7), ('VII E', 7), ('VIII A', 8), ('VIII B', 8), ('VIII C', 8), ('VIII D', 8), ('VIII E', 8), ('IX A', 9), ('IX B', 9), ('IX C', 9), ('IX D', 9), ('IX E', 9);
 
--- INSERT MAPEL (Integrasi Sistem Master)
-INSERT INTO tb_mapel (id_mapel, kode_mapel, nama_mapel, grade, hours, cat) VALUES
-(1, 'MTK7', 'Matematika', 'VII', 4, 'Umum'),
-(2, 'MTK8', 'Matematika', 'VIII', 4, 'Umum'),
-(3, 'MTK9', 'Matematika', 'IX', 4, 'Umum'),
-(4, 'IND7', 'Bahasa Indonesia', 'VII', 4, 'Umum'),
-(5, 'IND8', 'Bahasa Indonesia', 'VIII', 4, 'Umum'),
-(6, 'IND9', 'Bahasa Indonesia', 'IX', 4, 'Umum'),
-(7, 'ING7', 'Bahasa Inggris', 'VII', 4, 'Umum'),
-(8, 'ING8', 'Bahasa Inggris', 'VIII', 4, 'Umum'),
-(9, 'ING9', 'Bahasa Inggris', 'IX', 4, 'Umum'),
-(10, 'IPA7', 'Ilmu Pengetahuan Alam', 'VII', 4, 'Umum'),
-(11, 'IPA8', 'Ilmu Pengetahuan Alam', 'VIII', 4, 'Umum'),
-(12, 'IPA9', 'Ilmu Pengetahuan Alam', 'IX', 4, 'Umum'),
-(13, 'IPS7', 'Ilmu Pengetahuan Sosial', 'VII', 4, 'Umum'),
-(14, 'IPS8', 'Ilmu Pengetahuan Sosial', 'VIII', 4, 'Umum'),
-(15, 'IPS9', 'Ilmu Pengetahuan Sosial', 'IX', 4, 'Umum'),
-(16, 'SBD7', 'Seni Budaya', 'VII', 4, 'Umum'),
-(17, 'SBD8', 'Seni Budaya', 'VIII', 4, 'Umum'),
-(18, 'SBD9', 'Seni Budaya', 'IX', 4, 'Umum'),
-(19, 'SMK7', 'Seni Musik', 'VII', 4, 'Umum'),
-(20, 'BK7', 'Bimbingan Konseling', 'VII', 4, 'Umum'),
-(21, 'BK8', 'Bimbingan Konseling', 'VIII', 4, 'Umum'),
-(22, 'BK9', 'Bimbingan Konseling', 'IX', 4, 'Umum'),
-(23, 'INF7', 'Informatika', 'VII', 4, 'Umum'),
-(24, 'INF8', 'Informatika', 'VIII', 4, 'Umum'),
-(25, 'INF9', 'Informatika', 'IX', 4, 'Umum'),
-(26, 'PJK7', 'Pendidikan Jasmani Olahraga dan Kesehatan', 'VII', 4, 'Umum'),
-(27, 'PJK8', 'Pendidikan Jasmani Olahraga dan Kesehatan', 'VIII', 4, 'Umum'),
-(28, 'PJK9', 'Pendidikan Jasmani Olahraga dan Kesehatan', 'IX', 4, 'Umum'),
-(29, 'PKN7', 'Pendidikan Kewarganegaraan', 'VII', 4, 'Umum'),
-(30, 'PKN8', 'Pendidikan Kewarganegaraan', 'VIII', 4, 'Umum'),
-(31, 'PKN9', 'Pendidikan Kewarganegaraan', 'IX', 4, 'Umum'),
-(32, 'PAG7', 'Pendidikan Agama', 'VII', 4, 'Umum'),
-(33, 'PAG8', 'Pendidikan Agama', 'VIII', 4, 'Umum'),
-(34, 'PAG9', 'Pendidikan Agama', 'IX', 4, 'Umum'),
-(35, 'BDR7', 'Bahasa Daerah', 'VII', 4, 'Umum'),
-(36, 'BDR8', 'Bahasa Daerah', 'VIII', 4, 'Umum'),
-(37, 'BDR9', 'Bahasa Daerah', 'IX', 4, 'Umum'),
-(38, 'TTC7', 'Team Teaching', 'VII', 4, 'Umum'),
-(39, 'TTC8', 'Team Teaching', 'VIII', 4, 'Umum');
-
 -- INSERT GURU
--- INSERT GURU (Lengkap dengan Jabatan & Mapel)
-INSERT INTO tb_guru (nama_guru, nip, kode_guru, is_walikelas, id_kelas, pin_validasi, email, mapel, homebase, isBK) VALUES 
-('Sr. M. Elfrida Suhartati, SPM, S.Psi.,MM', '10001', '1', 'Tidak', NULL, '123456', 'guru1@sekolah.id', '-', '-', 0),
-('Antonetta Maria Kuntodiati, S.Pd', '10002', '2', 'Tidak', NULL, '123456', 'guru2@sekolah.id', 'Ilmu Pengetahuan Alam (IX)', 'Lab Fisika', 0),
-('Dra. Maria Marsiti', '10003', '3', 'Tidak', NULL, '123456', 'guru3@sekolah.id', 'Bimbingan Konseling (IX), Bahasa Daerah (VII, VIII, IX)', 'Tidak ada', 0),
-('Trianto Thomas, S.Pd', '10004', '4', 'Tidak', NULL, '123456', 'guru4@sekolah.id', 'Bahasa Indonesia (IX)', 'Ruang B. Indonesia 9', 0),
-('Agustina Peni Sarasati, S.Pd', '10005', '5', 'Tidak', NULL, '123456', 'guru5@sekolah.id', 'Matematika (VII)', 'Ruang Matematika 7', 0),
-('Y. Pamungkas, S.Pd', '10006', '6', 'Tidak', NULL, '123456', 'guru6@sekolah.id', 'Ilmu Pengetahuan Sosial (VII, VIII)', 'Ruang Geografi', 0),
-('Joseph Andiek Kristian, S.Pd, S.Kom', '10007', '7', 'Tidak', NULL, '123456', 'guru7@sekolah.id', 'Informatika (VIII, IX)', 'Laboratorium Komputer', 0),
-('Albertha Yulanti Susetyo, M.Pd', '10008', '8', 'Tidak', NULL, '123456', 'guru8@sekolah.id', 'Matematika (IX)', 'Ruang Matematika 9', 0),
-('Galang Bagus Afridianto, M.Pd', '10009', '9', 'Tidak', NULL, '123456', 'guru9@sekolah.id', 'Ilmu Pengetahuan Sosial (VIII, IX)', 'Ruang IPS', 0),
-('Hendrik Kiswanto, S.Pd.', '10010', '10', 'Tidak', NULL, '123456', 'guru10@sekolah.id', 'Seni Budaya (VII, VIII, IX)', 'Ruang Prakarya', 0),
-('Margareta Esti Wulan, S.Pd.', '10011', '11', 'Tidak', NULL, '123456', 'guru11@sekolah.id', 'Ilmu Pengetahuan Alam (VIII)', 'Lab Biologi', 0),
-('Theresia Sri Wahyuni, S.Pd, M.M.', '10012', '12', 'Tidak', NULL, '123456', 'guru12@sekolah.id', 'Bimbingan Konseling (VII, VIII)', 'Tidak ada', 0),
-('Yosua Beni Setiawan, S.Pd.', '10014', '14', 'Tidak', NULL, '123456', 'guru14@sekolah.id', 'Bahasa Inggris (VIII)', 'Tidak ada', 0),
-('God Life Endob Mesak, S.Pd', '10015', '15', 'Tidak', NULL, '123456', 'guru15@sekolah.id', 'Pendidikan Jasmani Olahraga dan Kesehatan (VIII, IX)', 'Tidak ada', 0),
-('Agnes Herawaty Sinurat, S.E., M.M.', '10016', '16', 'Tidak', NULL, '123456', 'guru16@sekolah.id', 'Ilmu Pengetahuan Sosial (VII), Pendidikan Kewarganegaraan (VIII, IX)', 'Ruang Kewarganegaraan', 0),
-('Deka Nanda Kurniawati, S.Pd.', '10017', '17', 'Tidak', NULL, '123456', 'guru17@sekolah.id', 'Bahasa Inggris (VII)', 'Ruang B.Inggris 7', 0),
-('Agatha Novenia Bintang Prieska, S.Pd.', '10018', '18', 'Tidak', NULL, '123456', 'guru18@sekolah.id', 'Bahasa Indonesia (VIII)', 'Ruang B. Indonesia 8', 0),
-('Bernadetha Devia Tindy Noveyra, S.Pd.', '10019', '19', 'Tidak', NULL, '123456', 'guru19@sekolah.id', 'Pendidikan Agama (VII, IX)', 'Ruang Agama', 0),
-('Drs. Albertus Magnus Meo Depa', '10020', '20', 'Tidak', NULL, '123456', 'guru20@sekolah.id', 'Bahasa Inggris (IX)', 'Ruang B.Inggris 9', 0),
-('Giovani Bimby Dwiantonio, S.Pd', '10021', '21', 'Tidak', NULL, '123456', 'guru21@sekolah.id', 'Pendidikan Agama (VII, VIII), Team Teaching (VII)', 'Tidak ada', 0),
-('Arnoldus Kobe Tegar Felix Sai, S.Pd.', '10022', '22', 'Tidak', NULL, '123456', 'guru22@sekolah.id', 'Matematika (VIII)', 'Ruang Matematika 8', 0),
-('Haniar Mey Sila Kinanti, S.Pd.', '10023', '23', 'Tidak', NULL, '123456', 'guru23@sekolah.id', 'Ilmu Pengetahuan Alam (VII)', 'Laboratorium IPA', 0),
-('Anjelina Wulandari Sitina De Sareng, S.Pd', '10024', '24', 'Tidak', NULL, '123456', 'guru24@sekolah.id', 'Pendidikan Kewarganegaraan (VII, VIII), Team Teaching (VIII)', 'Ruang PPKN', 0),
-('Lydia Uli Permatasari, S.Pd.', '10025', '25', 'Tidak', NULL, '123456', 'guru25@sekolah.id', 'Pendidikan Jasmani Olahraga dan Kesehatan (VII, VIII), Team Teaching (VIII)', 'Tidak ada', 0),
-('Albertus Bayu Seto, S.Pd', '10026', '26', 'Tidak', NULL, '123456', 'guru26@sekolah.id', 'Bahasa Inggris (VII, VIII, IX)', 'Ruang B Inggris 8', 0),
-('Brigita Natalia Setyaningrum, S.Pd.', '10027', '27', 'Tidak', NULL, '123456', 'guru27@sekolah.id', 'Bahasa Indonesia (VII)', 'Ruang B. Indonesia 7', 0),
-('Amelia Rangel Da Silva, S.Pd', '10028', '28', 'Tidak', NULL, '123456', 'guru28@sekolah.id', 'Seni Musik (VII)', 'Ruang Seni Musik', 0);
-
-
--- INSERT ORANG TUA
-INSERT INTO tb_orang_tua (nik_ortu, password, nama_ayah, pekerjaan_ayah, nama_ibu, pekerjaan_ibu, no_hp_ortu, alamat) 
-VALUES ('3573012345678901', 'e10adc3949ba59abbe56e057f20f883e', 'Bpk. Dani', 'Swasta', 'Ibu Dani', 'Ibu Rumah Tangga', '081234567890', 'Jl. Merdeka No. 1, Malang');
-
--- INSERT SISWA (Data awal)
-INSERT INTO tb_siswa (no_induk, nama_siswa, jenis_kelamin, kota, tanggal_lahir, alamat, nama_ayah, pekerjaan_ayah, nama_ibu, pekerjaan_ibu, no_hp_ortu, id_ortu) VALUES 
-('2024001', 'Ahmad Roland', 'L', 'Malang', '2010-05-15', 'Jl. Merdeka No. 1', 'Bpk. Dani', 'Swasta', 'Ibu Dani', 'Ibu Rumah Tangga', '081234567890', NULL);
-
--- INSERT ANGGOTA KELAS
-INSERT INTO tb_anggota_kelas (no_induk, id_kelas, id_tahun) VALUES ('2024001', 1, 1);
-
--- SIMULASI RELASI KAKAK-ADIK
--- A. Ikat Siswa Pertama (Sang Kakak - Ahmad Roland yang sudah ada di script 1) ke Akun Bapak Dani
-UPDATE tb_siswa SET id_ortu = 1 WHERE no_induk = '2024001';
--- B. Buat Siswa Kedua (Sang Adik - Budi Roland) dan langsung diikat ke Akun Bapak Dani
-INSERT INTO tb_siswa (no_induk, nama_siswa, jenis_kelamin, kota, tanggal_lahir, alamat, id_ortu, status_aktif) 
-VALUES ('2025002', 'Budi Roland', 'L', 'Malang', '2012-08-20', 'Jl. Merdeka No. 1', 1, 'Aktif');
--- Masukkan Sang Adik ke Kelas 7B
-INSERT INTO tb_anggota_kelas (no_induk, id_kelas, id_tahun) VALUES ('2025002', 2, 1);
+INSERT INTO tb_guru (nama_guru, nip, kode_guru, id_kelas, pin_validasi) VALUES 
+('Sr. M. Elfrida Suhartati, SPM, S.Psi.,MM', '10001', '1', NULL, '123456'),
+('Antonetta Maria Kuntodiati, S.Pd', '10002', '2', NULL, '123456'),
+('Dra. Maria Marsiti', '10003', '3', NULL, '123456'),
+('Trianto Thomas, S.Pd', '10004', '4', NULL, '123456'),
+('Agustina Peni Sarasati, S.Pd', '10005', '5', NULL, '123456'),
+('Y. Pamungkas, S.Pd', '10006', '6', NULL, '123456'),
+('Joseph Andiek Kristian, S.Pd, S.Kom', '10007', '7', NULL, '123456'),
+('Albertha Yulanti Susetyo, M.Pd', '10008', '8', NULL, '123456'),
+('Galang Bagus Afridianto, M.Pd', '10009', '9', NULL, '123456'),
+('Hendrik Kiswanto, S.Pd.', '10010', '10', NULL, '123456'),
+('Margareta Esti Wulan, S.Pd.', '10011', '11', NULL, '123456'),
+('Theresia Sri Wahyuni, S.Pd, M.M.', '10012', '12', NULL, '123456'),
+('Yosua Beni Setiawan, S.Pd.', '10014', '14', NULL, '123456'),
+('God Life Endob Mesak, S.Pd', '10015', '15', NULL, '123456'),
+('Agnes Herawaty Sinurat, S.E., M.M.', '10016', '16', NULL, '123456'),
+('Deka Nanda Kurniawati, S.Pd.', '10017', '17', NULL, '123456'),
+('Agatha Novenia Bintang Prieska, S.Pd.', '10018', '18', NULL, '123456'),
+('Bernadetha Devia Tindy Noveyra, S.Pd.', '10019', '19', NULL, '123456'),
+('Drs. Albertus Magnus Meo Depa', '10020', '20', NULL, '123456'),
+('Giovani Bimby Dwiantonio, S.Pd', '10021', '21', NULL, '123456'),
+('Arnoldus Kobe Tegar Felix Sai, S.Pd.', '10022', '22', NULL, '123456'),
+('Haniar Mey Sila Kinanti, S.Pd.', '10023', '23', NULL, '123456'),
+('Anjelina Wulandari Sitina De Sareng, S.Pd', '10024', '24', NULL, '123456'),
+('Lydia Uli Permatasari, S.Pd.', '10025', '25', NULL, '123456'),
+('Albertus Bayu Seto, S.Pd', '10026', '26', NULL, '123456'),
+('Brigita Natalia Setyaningrum, S.Pd.', '10027', '27', NULL, '123456'),
+('Amelia Rangel Da Silva, S.Pd', '10028', '28', NULL, '123456');
